@@ -3,6 +3,8 @@ import { Form, Button, Alert } from 'react-bootstrap';
 
 import { createUser } from '../utils/API';
 import Auth from '../utils/auth';
+import { useMutation } from '@apollo/client';
+import { ADD_USER } from '../utils/mutations';
 
 const SignupForm = () => {
   // set initial form state
@@ -27,20 +29,17 @@ const SignupForm = () => {
       event.stopPropagation();
     }
 
-    try {
-      const response = await createUser(userFormData);
+      // const response = await createUser(userFormData);
+      const {data} = useMutation(ADD_USER, {variables: {...userFormData}})
 
-      if (!response.ok) {
+      if (!data) {
         throw new Error('something went wrong!');
       }
 
-      const { token, user } = await response.json();
+      const { token, user } = data;
       console.log(user);
       Auth.login(token);
-    } catch (err) {
-      console.error(err);
-      setShowAlert(true);
-    }
+
 
     setUserFormData({
       username: '',
